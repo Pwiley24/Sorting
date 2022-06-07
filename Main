@@ -1,0 +1,244 @@
+/*
+ * This is a program that sorts arrays from smallest to largest
+ * Author: Paige Wiley
+ * Date: 01/08/2022
+ */
+package sortingProject;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Timer;
+
+//class for sorting project
+public class sortingProject {
+	Scanner consoleInput = new Scanner(System.in);
+	String input;
+	Scanner fileInput;
+	int[] inputArray;
+	ArrayList unsortedArray = new ArrayList<>();
+	ArrayList sortedArray = new ArrayList<>();
+	static long startTime = 0;
+	
+	//constructor of sorting project class
+	public sortingProject() throws IOException {
+		Boolean validInputFile = false;
+		while (validInputFile == false) {
+			System.out.println("Enter a number for the input file:");
+			System.out.println("1: input1.txt, 2: input2.txt, 3: input3.txt, 4: input4.txt");
+			input = consoleInput.nextLine();
+			if (input.length() != 1) {
+				System.out.println("Make sure to enter a single digit number.");
+			} else if (!input.equals("1")
+					&& !input.equals("2")
+					&& !input.equals("3")
+					&& !input.equals("4")) {
+				System.out.println("Enter a valid number.");
+			} else validInputFile = true;
+		}
+		
+		try {
+			fileInput = new Scanner(new File("input" + input.charAt(0) + ".txt"));
+		}catch(FileNotFoundException ex) {//if file not found
+			ex.printStackTrace();
+			System.exit(0);
+		}
+		
+		
+		String infile = fileInput.nextLine();
+		String[] inputStringArray = infile.split(",");
+		
+		inputArray = new int[inputStringArray.length];//establish size of array
+		for (int i = 0; i < inputStringArray.length; i++) {//establish value of each item in array
+			inputArray[i] = Integer.parseInt(inputStringArray[i]);
+		}
+		
+		
+		Boolean validInputSort = false;
+		while (validInputSort == false) {
+			System.out.println("Enter the sorting method:");
+			System.out.println("1:bubble, 2: selection, 3: table, 4: quick");
+			input = consoleInput.nextLine();
+			if (input.length() != 1) {
+				System.out.println("Make sure to enter a single digit number.");
+			} else if (!input.equals("1")
+					&& !input.equals("2")
+					&& !input.equals("3")
+					&& !input.equals("4")) {
+				System.out.println("Enter a valid number.");
+			} else validInputSort = true;
+		}
+		
+		for (int i = 0; i < inputArray.length; i++) {
+			unsortedArray.add(inputArray[i]);
+		}
+		
+		startTime = System.currentTimeMillis();
+		
+		/*
+		 * if bubble sort was selected.
+		 * compare two pairs
+		 * if pair to left is larger move it to the right side
+		 * continue going through pairs with left value being OG index 0 until you reach the end
+		 * continue sorting pairs until every value is the value at left.
+		 */
+		if (input.equals("1")) {
+			
+			for(int j = 0; j < inputArray.length; j++) {
+				for(int i = 0; i < inputArray.length - 1; i++) {
+					if((int)(unsortedArray.get(i)) > (int)(unsortedArray.get(i + 1))) {//left is larger	
+						int temp = (int)(unsortedArray.get(i));
+						unsortedArray.set(i, unsortedArray.get(i + 1));
+						unsortedArray.set((i + 1),temp);
+						
+					}
+				}
+			}
+			
+			for(int i = 0; i < inputArray.length; i++) {//transfer the sorted array to the sortedArray array
+				sortedArray.add(unsortedArray.get(i));
+			}
+			
+			stopTimer();//this stops the timer and tells you how long it took.
+			System.out.println(sortedArray);
+			
+			//Create a new File with the sorted array:
+			File sortedFile1 = new File("output1.txt");
+	
+			//Create the FileWriter
+			Writer writer1 = new FileWriter(sortedFile1);
+			
+			/* I used code from stackoverflow.com
+			 * URL: https://stackoverflow.com/questions/7357852/write-int-to-text-file-using-writer
+			 * I used this code to write data into the new file I created to print out the sorted array.
+			 */
+			
+			//Add the array data to the new file
+			for(int i = 0; i < inputArray.length; i++) {
+				writer1.write(sortedArray.get(i) + ", ");
+			}
+			writer1.close();
+		}
+			
+	
+		
+		/*
+		 * If selection sort was selected.
+		 * Sort through all numbers and choose the smallest
+		 * Set smallest aside and continue going through numbers
+		 * until you get array that is smallest to largest.
+		 * 
+		 */
+		if (input.equals("2")) {
+			int lowestVal;
+			int index = 0;
+			
+			//for length of array
+			for(int x = 0; x < inputArray.length; x++) {//iterates until all numbers sorted
+				lowestVal = (int) unsortedArray.get(0);
+				index = 0;
+				
+				for(int y = 0; y < unsortedArray.size(); y++) {//iterates through each number in array
+					if (lowestVal < (int) unsortedArray.get(y)) {//next number is greater
+						lowestVal = (int) unsortedArray.get(y);
+						index = y;
+					}	
+				}
+				sortedArray.add(0, lowestVal);
+				unsortedArray.remove(index);
+			}
+			stopTimer();
+			//Print the sorted array to the system
+			System.out.println(sortedArray);	
+			
+		
+			//Create a new File with the sorted array:
+			File sortedFile2 = new File("output2.txt");
+	
+			//Create the FileWriter
+			Writer writer2 = new FileWriter(sortedFile2);
+			
+			/* I used code from stackoverflow.com
+			 * URL: https://stackoverflow.com/questions/7357852/write-int-to-text-file-using-writer
+			 * I used this code to write data into the new file I created to print out the sorted array.
+			 */
+			
+			//Add the array data to the new file
+			for(int i = 0; i < inputArray.length; i++) {
+				writer2.write(sortedArray.get(i) + ", ");
+			}
+			writer2.close();
+				
+		}
+		
+		/*
+		 * Tally how often you see each number
+		 * Print out that number of times
+		 * 
+		 */
+		if (input.equals("3")) {
+			int[] multiArray = new int[1001]; //contains the number of times a value appears in the array.
+			for(int i = 0; i < inputArray.length; i++) {
+				multiArray[inputArray[i]]++;
+			}
+		
+			
+			int count = 0;
+			//i = actual number
+			for(int i = 0; i < multiArray.length; i++) {
+				//j = number of appearances
+				for(int j = 0; j < multiArray[i]; j++) {
+					inputArray[count] = i;
+					sortedArray.add(i);
+					count++;
+				}
+			}
+				
+		
+			stopTimer();
+			//Print the sorted array to the system
+			System.out.println(sortedArray);	
+			
+			
+			//Create a new File with the sorted array:
+			File sortedFile3 = new File("output3.txt");
+	
+			//Create the FileWriter
+			Writer writer3 = new FileWriter(sortedFile3);
+			
+			/* I used code from stackoverflow.com
+			 * URL: https://stackoverflow.com/questions/7357852/write-int-to-text-file-using-writer
+			 * I used this code to write data into the new file I created to print out the sorted array.
+			 */
+			
+			//Add the array data to the new file
+			for(int i = 0; i < inputArray.length; i++) {
+				writer3.write(sortedArray.get(i) + ", ");
+			}
+			writer3.close();
+			
+		}
+	}
+	
+	
+	public static void stopTimer() {
+		//System.out.println(System.currentTimeMillis());
+		long runTime = (System.currentTimeMillis()) - (startTime);
+		System.out.println("It took " + runTime + " miliseconds to sort!");
+	}
+	
+	
+	//main method for sorting project
+	public static void main(String[] args) throws IOException {
+		new sortingProject();
+
+	}
+
+}
